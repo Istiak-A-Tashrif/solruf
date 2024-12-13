@@ -4,6 +4,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { setToken } from "@/utils/auth";
 import useAuth from "@/hooks/useAuth";
+import Link from "next/link";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -74,6 +75,15 @@ const LoginPage = () => {
             Login
           </button>
         </form>
+        <p className="text-center text-sm text-gray-600 mt-4">
+          Don't have an account?{" "}
+          <Link
+            href="/register"
+            className="text-blue-600 hover:underline font-semibold"
+          >
+            Register
+          </Link>
+        </p>
         {error && (
           <p className="mt-2 text-sm text-center text-red-600">{error}</p>
         )}

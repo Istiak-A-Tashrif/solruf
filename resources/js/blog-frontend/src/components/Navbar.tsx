@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import LogoutButton from "./LogoutButton";
+import Link from "next/link";
 
 const Navbar = () => {
   const router = useRouter();
@@ -19,7 +20,8 @@ const Navbar = () => {
           Blog Platform
         </h1>
       </div>
-      <div className="flex space-x-4">
+      <div className="flex space-x-4 items-center">
+        <Link href={'/register'}><button>Register</button></Link>
         <button
           onClick={navigateToAdminDashboard}
           className="bg-white text-blue-600 px-4 py-2 rounded-lg shadow hover:bg-blue-100"
