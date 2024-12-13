@@ -25,9 +25,9 @@
 </VirtualHost>
 ````
 
-1. `php artisan migrate`
-
 1. `php artisan key:generate`
+
+1. `php artisan migrate`
 
 1. `php artisan jwt:secret`
 
@@ -41,6 +41,7 @@
 
 User Authentication is done by laravel (MySQL) (PHP ver 8.2.*)
 Blog Crud Managed by NestJs (MongoDB)
+frontend in NextJs
 
 # Setup with laragon
 
@@ -56,6 +57,9 @@ Blog Crud Managed by NestJs (MongoDB)
 
 
 # NestJS and NextJS Setup
+
+
+1. copy the jwt token from laravel .env
 
 ```bash
 npm run setup

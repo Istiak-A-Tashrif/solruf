@@ -12,7 +12,7 @@ export class BlogsService {
   private async validateToken(token: string): Promise<void> {
     try {
       console.log(token);
-      const response = await axios.get('http://127.0.0.1:8000/api/user', {
+      const response = await axios.get(`${process.env.PROXY_URL}/user`, {
         headers: {
           Authorization: token,
         },

@@ -9,7 +9,7 @@ export class AuthService {
 
   // Function to call Laravel API to validate JWT
   async validateJwt(token: string): Promise<boolean> {
-    const url = 'http://127.0.0.1:8000/api/user'; // Laravel API endpoint for token validation
+    const url = `${process.env.PROXY_URL}/user`; // Laravel API endpoint for token validation
 
     try {
       // Send a GET request to Laravel's API to validate the token

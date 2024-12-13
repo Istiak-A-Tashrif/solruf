@@ -5,8 +5,10 @@ import axios from 'axios';
 
 @Injectable()
 export class ProxyService {
-    private readonly laravelUrl = 'http://127.0.0.1:8000/api';
+private readonly laravelUrl = process.env.PROXY_URL;
 
+    
+    
     async getAllUsers() {
         const response = await axios.get(`${this.laravelUrl}/users`);
         return response.data;

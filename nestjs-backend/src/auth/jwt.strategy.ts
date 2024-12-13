@@ -18,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: any) {
     try {
       // Send the token to Laravel API to validate it
-      const response = await axios.get('http://http://127.0.0.1:8000/api/user', {
+      const response = await axios.get(`${process.env.PROXY_URL}/user`, {
         headers: {
           Authorization: `Bearer ${payload}`,
         },
