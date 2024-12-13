@@ -1,32 +1,40 @@
 "use client";
-import { useRouter } from "next/router";
-import axios from "axios";
-import { useState, useEffect } from "react";
+import axiosInstance from "@/api/axiosInstance";
+import { useQuery } from '@tanstack/react-query';
+import { useParams } from "next/navigation";
 
 const SingleBlog = () => {
-  const router = useRouter();
-  const { id } = router.query;
-  const [blog, setBlog] = useState(null);
+  const { slug } = useParams();
 
-  useEffect(() => {
-    if (!id) return;
-    const fetchBlog = async () => {
-      try {
-        const response = await axios.get(`http://127.0.0.1:3000/api/blogs/${id}`);
-        setBlog(response.data);
-      } catch (err) {
-        console.error("Failed to fetch blog post:", err);
-      }
-    };
-    fetchBlog();
-  }, [id]);
+  // Define the queryKey and queryFn for React Query
+  const queryKey = ['singleBlog', slug];
+  const queryFn = async () => {
+    const response = await axiosInstance.get(`/posts/${slug}`);
+    return response.data;
+  };
 
-  if (!blog) {
+  // Use the useQuery hook with explicit queryKey and queryFn
+  const { data: blog, isLoading, isError, error } = useQuery({
+    queryKey,   // The unique query key for the data
+    queryFn,    // The function to fetch the data
+    enabled: !!slug, // Ensure the query is not fired until the slug is available
+  });
+
+  // Handle loading, error, and success states
+  if (isLoading) {
     return <p>Loading...</p>;
   }
 
+  if (isError) {
+    return <p>Error: {error.message}</p>;
+  }
+
+  if (!blog) {
+    return <p>Blog not found</p>;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100  flex flex-col justify-between">
       <header className="bg-blue-600 text-white py-4">
         <h1 className="text-center text-3xl font-bold">{blog.title}</h1>
       </header>

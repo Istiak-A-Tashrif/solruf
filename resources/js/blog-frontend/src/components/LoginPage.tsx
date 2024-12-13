@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { setToken } from "@/utils/auth";
@@ -12,17 +12,19 @@ const LoginPage = () => {
   const router = useRouter();
 
   
-  const isAuthenticated = useAuth(); // Get the authentication status from the hook
+  const { isAuthenticated } = useAuth();
 
-  if (isAuthenticated) {
-    return router.push("/");
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/"); // Redirect authenticated users away from login
+    }
+  }, [isAuthenticated, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/login", {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/proxy/login`, {
         email,
         password,
       });

@@ -1,41 +1,60 @@
 "use client";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import axiosInstance from "@/api/axiosInstance"; // Assuming you have axiosInstance
 import Link from "next/link";
 
 const UserManagement = () => {
-  const [users, setUsers] = useState([]);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get("http://127.0.0.1:8000/api/users");
-        setUsers(response.data);
-      } catch (err) {
-        console.error("Failed to fetch users:", err);
-      }
-    };
-    fetchUsers();
-  }, []);
-
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://127.0.0.1:8000/api/users/${id}`);
-      setUsers(users.filter((user) => user.id !== id)); // Update the state
-    } catch (err) {
-      console.error("Failed to delete user:", err);
-    }
+  // Define the queryKey and queryFn for fetching users
+  const queryKey = ["users"];
+  const queryFn = async () => {
+    const response = await axiosInstance.get("/proxy/users");
+    return response.data;
   };
 
+  // Fetch users using useQuery
+  const { data: users, isLoading, isError, error } = useQuery({
+    queryKey,    // Query key for users
+    queryFn,     // Fetch function for users
+  });
+
+  // Define the mutation for deleting a user
+  const deleteMutation = useMutation({
+    mutationFn: async (id) => {
+      await axiosInstance.delete(`/proxy/users/${id}`);
+    },
+    onSuccess: () => {
+      // Invalidate the cache and refetch the users
+      queryClient.invalidateQueries(queryKey);
+    },
+    onError: (err) => {
+      console.error("Failed to delete user:", err);
+    },
+  });
+
+  // Handle delete button click
+  const handleDelete = (id) => {
+    deleteMutation.mutate(id);
+  };
+
+  if (isLoading) {
+    return <p>Loading users...</p>;
+  }
+
+  if (isError) {
+    return <p>Error: {error.message}</p>;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-between">
       <header className="bg-green-600 text-white py-4">
         <h1 className="text-center text-3xl font-bold">User Management</h1>
       </header>
       <main className="container mx-auto p-4">
         <div className="text-right mb-4">
           <Link
-            href="/admin/users/create"
+            href="/users/create"
             className="bg-green-600 text-white px-4 py-2 rounded-lg"
           >
             Create New User
@@ -51,13 +70,18 @@ const UserManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {users?.map((user) => (
                 <tr key={user.id}>
-                  <td className="border px-4 py-2">{user.name}</td>
+                  <td className="border px-4 py-2"> <Link
+                                            href={`/user-profile/${user.id}`}
+                                            className="text-blue-500 hover:underline mr-2"
+                                        >
+                                        {user.name}
+                                        </Link></td>
                   <td className="border px-4 py-2">{user.email}</td>
                   <td className="border px-4 py-2">
                     <Link
-                      href={`/admin/users/edit/${user.id}`}
+                      href={`/users/update/${user.id}`}
                       className="text-blue-500 hover:underline mr-2"
                     >
                       Edit
@@ -65,8 +89,9 @@ const UserManagement = () => {
                     <button
                       onClick={() => handleDelete(user.id)}
                       className="text-red-500 hover:underline"
+                      disabled={deleteMutation.isPending} // Disable while deleting
                     >
-                      Delete
+                      {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
                     </button>
                   </td>
                 </tr>
