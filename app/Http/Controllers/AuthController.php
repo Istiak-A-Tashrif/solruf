@@ -36,6 +36,6 @@ class AuthController extends Controller
             return response()->json(['error' => 'Token is invalid or expired'], 401);
         }
 
-        return response()->json(['user' => $user]);
+        return response()->json(['user' => $user], 200);
     }
 }
