@@ -75,3 +75,7 @@ npm run start
 ```Cmder
 php artisan serve
 ```
+
+# Postman  Collection for Endpoints
+
+1. Backend Endpoints.postman_collection (check  this file in the root)
